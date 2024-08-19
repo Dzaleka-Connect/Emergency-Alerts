@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency Alerts Board</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+
+</head>
+<body>
+    <header>
+        <h1>Dzaleka Refugee Camp Emergency Alerts</h1>
+    </header>
+    <main>
+        <section id="search-filter">
+            <h2>Search and Filter Alerts</h2>
+            <div class="search-filter-container">
+                <input type="text" id="search-input" placeholder="Search..." aria-label="Search alerts">
+                <input type="date" id="date-filter" aria-label="Filter by date">
+            </div>
+        </section>
+        <section id="alerts">
+            <h2>Recent Alerts</h2>
+            <div id="alert-list" class="alert-list">
+                <!-- Alerts will be inserted here -->
+            </div> <br>
+            <div id="pagination" class="pagination-container">
+                <button id="prev-btn" class="pagination-btn">Previous</button>
+                <span id="page-info" class="pagination-info">Page 1</span>
+                <button id="next-btn" class="pagination-btn">Next</button>
+            </div>
+        </section>
+        <section id="submit-alert">
+        <h2>Submit a New Alert</h2>
+        <form id="alert-form">
+            <label for="alert-message">Alert Message:</label>
+            <textarea id="alert-message" required aria-label="Alert message"></textarea>
+            
+            <label for="alert-description">Alert Description:</label>
+            <textarea id="alert-description" aria-label="Alert description"></textarea>
+            
+            <label for="alert-importance">Importance:</label>
+            <select id="alert-importance" aria-label="Alert importance">
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+            </select>
+            
+            <label for="alert-status">Status:</label>
+            <select id="alert-status" aria-label="Alert status">
+                <option value="new">New</option>
+                <option value="in-progress">In Progress</option>
+                <option value="resolved">Resolved</option>
+            </select>
+            
+            <!-- Personal Information Fields -->
+            <label for="user-name">Your Name:</label>
+            <input type="text" id="user-name" required aria-label="Your name">
+            
+            <label for="user-email">Your Email:</label>
+            <input type="email" id="user-email" required aria-label="Your email">
+            
+            <label for="user-phone">Your Phone Number:</label>
+            <input type="tel" id="user-phone" aria-label="Your phone number">
+            
+            <button type="submit">Submit Alert</button>
+        </form>
+    </section>
+
+        <section id="export">
+            <button id="export-btn" class="export-btn">Export Alerts</button>
+        </section>
+    </main>
+
+    <!-- JSON Data Section -->
+    <script id="initial-data" type="application/json">
+    [
+        {
+            "message": "Water supply disrupted in Sector 4.",
+            "description": "Water supply disruption in Sector 4 is causing major inconvenience. Temporary measures are being taken.",
+            "date": "2024-08-15 14:30",
+            "importance": "high",
+            "status": "new"
+        },
+        {
+            "message": "Medical assistance needed in Zone B.",
+            "description": "Urgent medical assistance is required in Zone B due to an outbreak of illness.",
+            "date": "2024-08-15 09:00",
+            "importance": "medium",
+            "status": "ongoing"
+        },
+        {
+            "message": "Food supplies distributed to all sectors.",
+            "description": "Food supplies have been distributed to all sectors. Ensure to collect your ration as per the schedule.",
+            "date": "2024-08-14 16:00",
+            "importance": "low",
+            "status": "resolved"
+        }
+    ]
+    </script>
+
+    <script src="scripts.js"></script>
+</body>
+</html>

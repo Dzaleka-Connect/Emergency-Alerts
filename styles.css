@@ -1,0 +1,189 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: #f4f4f4;
+}
+
+header {
+    background-color: #0056b3;
+    color: #fff;
+    text-align: center;
+    padding: 20px 0;
+}
+
+h1 {
+    margin: 0;
+}
+
+/* Main Section Styles */
+main {
+    padding: 20px;
+}
+
+/* Search and Filter Section */
+#search-filter {
+    margin-bottom: 20px;
+}
+
+.search-filter-container {
+    display: flex;
+    gap: 10px;
+}
+
+#search-input, #date-filter {
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+/* Alerts Section */
+#alerts {
+    margin-bottom: 20px;
+}
+
+.alert-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.alert-card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+}
+
+.alert-card i {
+    font-size: 24px;
+    margin-right: 10px;
+}
+
+.alert-card .alert-message {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.alert-card .alert-description {
+    font-size: 16px;
+    color: #666;
+}
+
+.alert-card .alert-date, .alert-card .alert-status {
+    font-size: 14px;
+    color: #999;
+}
+
+.alert-card.new {
+    border-left: 5px solid red; /* Blue for new alerts */
+    background-color: #e8f4ff; /* Light blue background for new alerts */
+}
+
+.alert-card.in-progress {
+    border-left: 5px solid #ffc107; /* Amber for in-progress alerts */
+    background-color: #fff8e1; /* Light amber background for in-progress alerts */
+}
+
+.alert-card.resolved {
+    border-left: 5px solid #28a745; /* Green for resolved alerts */
+    background-color: #e8f5e9; /* Light green background for resolved alerts */
+}
+
+/* Pagination */
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.pagination-btn {
+    padding: 10px 20px;
+    border: none;
+    background-color: #0056b3;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.pagination-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.pagination-info {
+    font-size: 16px;
+}
+
+/* Submit Alert Section */
+#submit-alert {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+#submit-alert form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+#submit-alert label {
+    font-weight: bold;
+}
+
+#submit-alert input[type="text"], 
+#submit-alert input[type="email"], 
+#submit-alert input[type="tel"], 
+#submit-alert textarea, 
+#submit-alert select {
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    width: 100%;
+}
+
+#submit-alert textarea {
+    height: 100px;
+}
+
+#submit-alert button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #0056b3;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#submit-alert button:hover {
+    background-color: #004494;
+}
+
+/* Export Section */
+#export {
+    display: flex;
+    justify-content: center;
+}
+
+.export-btn {
+    padding: 10px 20px;
+    border: none;
+    background-color: #28a745;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.export-btn:hover {
+    background-color: #218838;
+}
