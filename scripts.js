@@ -58,11 +58,12 @@ document.getElementById("alert-form").addEventListener("submit", function (event
     const alertData = {
         message: formData.get("alert-message"),
         description: formData.get("alert-description"),
-        importance: formData.get("alert-importance"),
+        date: new Date().toLocaleString(),  // Capture the current date/time
         status: formData.get("alert-status"),
-        userName: formData.get("user-name"),
-        userEmail: formData.get("user-email"),
-        userPhone: formData.get("user-phone")
+        importance: formData.get("alert-importance"),
+        name: formData.get("user-name"),
+        email: formData.get("user-email"),
+        phone: formData.get("user-phone")
     };
 
     // Send email using EmailJS
@@ -73,8 +74,9 @@ document.getElementById("alert-form").addEventListener("submit", function (event
                 title: 'Alert Submitted',
                 text: 'Your alert has been successfully submitted!',
             });
-            loadAlerts([...getAlertsFromDOM(), alertData]); // Add the new alert to the list
-            document.getElementById("alert-form").reset(); // Reset the form
+            // Add the new alert to the list and reset the form
+            loadAlerts([...getAlertsFromDOM(), alertData]);
+            document.getElementById("alert-form").reset();
         })
         .catch(error => {
             Swal.fire({
