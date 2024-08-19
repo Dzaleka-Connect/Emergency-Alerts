@@ -1,5 +1,5 @@
 // Initialize EmailJS
-emailjs.init("X3pvE6awcR4Xy1c0F"); 
+emailjs.init("X3pvE6awcR4Xy1c0F");
 
 // Load initial data
 document.addEventListener("DOMContentLoaded", () => {
@@ -16,7 +16,7 @@ function loadAlerts(alerts) {
     alerts.forEach(alert => {
         const alertCard = document.createElement("div");
         alertCard.className = `alert-card ${alert.status}`;
-        
+
         alertCard.innerHTML = `
             <i class="fas ${getIcon(alert.importance)}"></i>
             <div class="alert-message">${alert.message}</div>
@@ -24,7 +24,7 @@ function loadAlerts(alerts) {
             <div class="alert-date">Date: ${new Date(alert.date).toLocaleString()}</div>
             <div class="alert-status">Status: ${capitalize(alert.status)}</div>
         `;
-        
+
         alertList.appendChild(alertCard);
     });
 
@@ -58,34 +58,36 @@ document.getElementById("alert-form").addEventListener("submit", function (event
     const alertData = {
         message: formData.get("alert-message"),
         description: formData.get("alert-description"),
-        date: new Date().toLocaleString(),  // Capture the current date/time
-        status: formData.get("alert-status"),
         importance: formData.get("alert-importance"),
+        status: formData.get("alert-status"),
         name: formData.get("user-name"),
         email: formData.get("user-email"),
         phone: formData.get("user-phone")
     };
 
-    // Send email using EmailJS
-    emailjs.send("service_ep8c6h4", "template_8bjemjg", alertData)
-        .then(response => {
-            Swal.fire({
-                icon: 'success',
-                title: 'Alert Submitted',
-                text: 'Your alert has been successfully submitted!',
-            });
-            // Add the new alert to the list and reset the form
-            loadAlerts([...getAlertsFromDOM(), alertData]);
-            document.getElementById("alert-form").reset();
-        })
-        .catch(error => {
-            Swal.fire({
-                icon: 'error',
-                title: 'Submission Error',
-                text: 'There was an error submitting your alert. Please try again.',
-            });
-        });
+    sendEmail(alertData);
 });
+
+// Function to send email using EmailJS
+async function sendEmail(alertData) {
+    try {
+        const response = await emailjs.send("service_ep8c6h4", "template_8bjemjg", alertData);
+        Swal.fire({
+            icon: 'success',
+            title: 'Alert Submitted',
+            text: 'Your alert has been successfully submitted!',
+        });
+        loadAlerts([...getAlertsFromDOM(), alertData]); // Add the new alert to the list
+        document.getElementById("alert-form").reset(); // Reset the form
+    } catch (error) {
+        console.error('EmailJS Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Submission Error',
+            text: 'There was an error submitting your alert. Please try again.',
+        });
+    }
+}
 
 // Get alerts from the DOM
 function getAlertsFromDOM() {
@@ -151,7 +153,7 @@ document.getElementById("date-filter").addEventListener("change", updateAlerts);
 function updateAlerts() {
     const searchQuery = document.getElementById("search-input").value.toLowerCase();
     const selectedDate = document.getElementById("date-filter").value;
-    
+
     const alertCards = document.querySelectorAll(".alert-card");
 
     alertCards.forEach(card => {
