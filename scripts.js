@@ -1,10 +1,28 @@
 // Initialize EmailJS
 emailjs.init("X3pvE6awcR4Xy1c0F");
 
-// Function to parse dates in the format 'DD/MM/YYYY, HH:mm:ss'
-function parseDate(dateStr) {
-    const parts = dateStr.split(/[/,\s:]+/);
-    return new Date(parts[2], parts[1] - 1, parts[0], parts[3], parts[4], parts[5]);
+// Function to parse date
+function parseDate(dateString) {
+    if (!dateString) {
+        console.error("Date string is undefined or null:", dateString);
+        return null;
+    }
+
+    // Adjust parsing based on expected format
+    const [datePart, timePart] = dateString.split(", ");
+    if (!datePart || !timePart) {
+        console.error("Date or time part is missing:", dateString);
+        return null;
+    }
+
+    // Date format: DD/MM/YYYY
+    const [day, month, year] = datePart.split("/");
+    if (!day || !month || !year) {
+        console.error("Date parts are incomplete:", datePart);
+        return null;
+    }
+
+    return new Date(`${year}-${month}-${day}T${timePart}`);
 }
 
 // Load initial data
@@ -20,16 +38,17 @@ function loadAlerts(alerts) {
     alertList.innerHTML = ''; // Clear existing alerts
 
     alerts.forEach(alert => {
-        const alertCard = document.createElement("div");
-        alertCard.className = `alert-card ${alert.status || 'unknown'}`;
-        
-        const date = parseDate(alert.date).toLocaleString();
+        const parsedDate = parseDate(alert.date);
+        if (!parsedDate) return; // Skip if date parsing fails
 
+        const alertCard = document.createElement("div");
+        alertCard.className = `alert-card ${alert.status}`;
+        
         alertCard.innerHTML = `
             <i class="fas ${getIcon(alert.importance)}"></i>
             <div class="alert-message">${alert.message}</div>
             <div class="alert-description">${alert.description}</div>
-            <div class="alert-date">Date: ${date}</div>
+            <div class="alert-date">Date: ${parsedDate.toLocaleString()}</div>
             <div class="alert-status">Status: ${capitalize(alert.status)}</div>
         `;
         
@@ -41,8 +60,7 @@ function loadAlerts(alerts) {
 
 // Helper function to capitalize the first letter of a string
 function capitalize(str) {
-    if (!str) return ''; // Handle cases where str might be null or undefined
-    return str.charAt(0).toUpperCase() + str.slice(1);
+    return str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
 }
 
 // Get icon based on importance
@@ -103,7 +121,7 @@ function getAlertsFromDOM() {
         const date = parseDate(dateText);
 
         // Check if the date is valid
-        if (isNaN(date.getTime())) {
+        if (!date) {
             console.error('Invalid date value:', dateText);
             return; // Skip this alert if the date is invalid
         }
