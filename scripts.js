@@ -1,6 +1,12 @@
 // Initialize EmailJS
 emailjs.init("X3pvE6awcR4Xy1c0F");
 
+// Function to parse dates in the format 'DD/MM/YYYY, HH:mm:ss'
+function parseDate(dateStr) {
+    const parts = dateStr.split(/[/,\s:]+/);
+    return new Date(parts[2], parts[1] - 1, parts[0], parts[3], parts[4], parts[5]);
+}
+
 // Load initial data
 document.addEventListener("DOMContentLoaded", () => {
     const initialData = document.getElementById("initial-data").textContent;
@@ -15,13 +21,15 @@ function loadAlerts(alerts) {
 
     alerts.forEach(alert => {
         const alertCard = document.createElement("div");
-        alertCard.className = `alert-card ${alert.status}`;
+        alertCard.className = `alert-card ${alert.status || 'unknown'}`;
         
+        const date = parseDate(alert.date).toLocaleString();
+
         alertCard.innerHTML = `
             <i class="fas ${getIcon(alert.importance)}"></i>
             <div class="alert-message">${alert.message}</div>
             <div class="alert-description">${alert.description}</div>
-            <div class="alert-date">Date: ${new Date(alert.date).toLocaleString()}</div>
+            <div class="alert-date">Date: ${date}</div>
             <div class="alert-status">Status: ${capitalize(alert.status)}</div>
         `;
         
@@ -33,6 +41,7 @@ function loadAlerts(alerts) {
 
 // Helper function to capitalize the first letter of a string
 function capitalize(str) {
+    if (!str) return ''; // Handle cases where str might be null or undefined
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
@@ -91,7 +100,7 @@ function getAlertsFromDOM() {
     const alerts = [];
     document.querySelectorAll(".alert-card").forEach(card => {
         const dateText = card.querySelector(".alert-date").textContent.replace('Date: ', '');
-        const date = new Date(dateText);
+        const date = parseDate(dateText);
 
         // Check if the date is valid
         if (isNaN(date.getTime())) {
