@@ -8,6 +8,7 @@ function parseDate(dateString) {
         return null;
     }
 
+    // Adjust parsing based on expected format
     const [datePart, timePart] = dateString.includes(", ") ? dateString.split(", ") : [dateString, null];
 
     if (!datePart || !timePart) {
@@ -15,6 +16,7 @@ function parseDate(dateString) {
         return null;
     }
 
+    // Date format: DD/MM/YYYY
     const [day, month, year] = datePart.split("/");
     if (!day || !month || !year) {
         console.error("Date parts are incomplete:", datePart);
@@ -88,7 +90,8 @@ document.getElementById("alert-form").addEventListener("submit", function (event
         status: formData.get("alert-status"),
         name: formData.get("user-name"),
         email: formData.get("user-email"),
-        phone: formData.get("user-phone")
+        phone: formData.get("user-phone"),
+        date: new Date().toISOString() // Add the current date/time
     };
 
     // Send email using EmailJS
