@@ -8,14 +8,13 @@ function parseDate(dateString) {
         return null;
     }
 
-    // Adjust parsing based on expected format
-    const [datePart, timePart] = dateString.split(", ");
+    const [datePart, timePart] = dateString.includes(", ") ? dateString.split(", ") : [dateString, null];
+
     if (!datePart || !timePart) {
         console.error("Date or time part is missing:", dateString);
         return null;
     }
 
-    // Date format: DD/MM/YYYY
     const [day, month, year] = datePart.split("/");
     if (!day || !month || !year) {
         console.error("Date parts are incomplete:", datePart);
