@@ -8,9 +8,18 @@ function parseDate(dateString) {
         return null;
     }
 
-    // Adjust parsing based on expected format
-    const [datePart, timePart] = dateString.includes(", ") ? dateString.split(", ") : [dateString, null];
+    // Check if the dateString is already in ISO 8601 format
+    if (dateString.includes("T")) {
+        const date = new Date(dateString);
+        if (isNaN(date)) {
+            console.error("Invalid date format:", dateString);
+            return null;
+        }
+        return date;
+    }
 
+    // Adjust parsing based on expected format if not ISO
+    const [datePart, timePart] = dateString.split(", ");
     if (!datePart || !timePart) {
         console.error("Date or time part is missing:", dateString);
         return null;
@@ -25,6 +34,7 @@ function parseDate(dateString) {
 
     return new Date(`${year}-${month}-${day}T${timePart}`);
 }
+
 
 // Load initial data
 document.addEventListener("DOMContentLoaded", () => {
