@@ -8,21 +8,14 @@ function parseDate(dateString) {
         return null;
     }
 
-    // Adjust parsing based on expected format
-    const [datePart, timePart] = dateString.split(", ");
-    if (!datePart || !timePart) {
-        console.error("Date or time part is missing:", dateString);
-        return null;
+    // Check if the date is already in ISO format (YYYY-MM-DDTHH:mm:ss)
+    const isoDateMatch = dateString.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/);
+    if (isoDateMatch) {
+        return new Date(dateString);
     }
 
-    // Date format: DD/MM/YYYY
-    const [day, month, year] = datePart.split("/");
-    if (!day || !month || !year) {
-        console.error("Date parts are incomplete:", datePart);
-        return null;
-    }
-
-    return new Date(`${year}-${month}-${day}T${timePart}`);
+    console.error("Unexpected date format:", dateString);
+    return null;
 }
 
 // Load initial data
