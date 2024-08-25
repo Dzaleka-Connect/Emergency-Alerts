@@ -1,41 +1,6 @@
 // Initialize EmailJS
 emailjs.init("X3pvE6awcR4Xy1c0F");
 
-// Function to parse date
-function parseDate(dateString) {
-    if (!dateString) {
-        console.error("Date string is undefined or null:", dateString);
-        return null;
-    }
-
-    // Check if the dateString is already in ISO 8601 format
-    if (dateString.includes("T")) {
-        const date = new Date(dateString);
-        if (isNaN(date)) {
-            console.error("Invalid date format:", dateString);
-            return null;
-        }
-        return date;
-    }
-
-    // Adjust parsing based on expected format if not ISO
-    const [datePart, timePart] = dateString.split(", ");
-    if (!datePart || !timePart) {
-        console.error("Date or time part is missing:", dateString);
-        return null;
-    }
-
-    // Date format: DD/MM/YYYY
-    const [day, month, year] = datePart.split("/");
-    if (!day || !month || !year) {
-        console.error("Date parts are incomplete:", datePart);
-        return null;
-    }
-
-    return new Date(`${year}-${month}-${day}T${timePart}`);
-}
-
-
 // Load initial data
 document.addEventListener("DOMContentLoaded", () => {
     const initialData = document.getElementById("initial-data").textContent;
@@ -49,20 +14,17 @@ function loadAlerts(alerts) {
     alertList.innerHTML = ''; // Clear existing alerts
 
     alerts.forEach(alert => {
-        const parsedDate = parseDate(alert.date);
-        if (!parsedDate) return; // Skip if date parsing fails
-
         const alertCard = document.createElement("div");
         alertCard.className = `alert-card ${alert.status}`;
-        
+
         alertCard.innerHTML = `
             <i class="fas ${getIcon(alert.importance)}"></i>
             <div class="alert-message">${alert.message}</div>
             <div class="alert-description">${alert.description}</div>
-            <div class="alert-date">Date: ${parsedDate.toLocaleString()}</div>
+            <div class="alert-date">Date: ${new Date(alert.date).toLocaleString()}</div>
             <div class="alert-status">Status: ${capitalize(alert.status)}</div>
         `;
-        
+
         alertList.appendChild(alertCard);
     });
 
@@ -71,7 +33,7 @@ function loadAlerts(alerts) {
 
 // Helper function to capitalize the first letter of a string
 function capitalize(str) {
-    return str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 // Get icon based on importance
@@ -89,7 +51,7 @@ function getIcon(importance) {
 }
 
 // Handle form submission
-document.getElementById("alert-form").addEventListener("submit", function (event) {
+document.getElementById("alert-form").addEventListener("submit", async function (event) {
     event.preventDefault();
 
     const formData = new FormData(this);
@@ -101,47 +63,36 @@ document.getElementById("alert-form").addEventListener("submit", function (event
         name: formData.get("user-name"),
         email: formData.get("user-email"),
         phone: formData.get("user-phone"),
-        date: new Date().toISOString() // Add the current date/time
+        date: new Date().toISOString()
     };
 
-    // Send email using EmailJS
-    emailjs.send("service_ep8c6h4", "template_8bjemjg", alertData)
-        .then(response => {
-            Swal.fire({
-                icon: 'success',
-                title: 'Alert Submitted',
-                text: 'Your alert has been successfully submitted!',
-            });
-            loadAlerts([...getAlertsFromDOM(), alertData]); // Add the new alert to the list
-            document.getElementById("alert-form").reset(); // Reset the form
-        })
-        .catch(error => {
-            Swal.fire({
-                icon: 'error',
-                title: 'Submission Error',
-                text: 'There was an error submitting your alert. Please try again.',
-            });
-            console.error("EmailJS Error:", error);
+    try {
+        await emailjs.send("service_ep8c6h4", "template_8bjemjg", alertData);
+        Swal.fire({
+            icon: 'success',
+            title: 'Alert Submitted',
+            text: 'Your alert has been successfully submitted!',
         });
+        loadAlerts([...getAlertsFromDOM(), alertData]); // Add the new alert to the list
+        document.getElementById("alert-form").reset(); // Reset the form
+    } catch (error) {
+        console.error('EmailJS Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Submission Error',
+            text: 'There was an error submitting your alert. Please try again.',
+        });
+    }
 });
 
 // Get alerts from the DOM
 function getAlertsFromDOM() {
     const alerts = [];
     document.querySelectorAll(".alert-card").forEach(card => {
-        const dateText = card.querySelector(".alert-date").textContent.replace('Date: ', '');
-        const date = parseDate(dateText);
-
-        // Check if the date is valid
-        if (!date) {
-            console.error('Invalid date value:', dateText);
-            return; // Skip this alert if the date is invalid
-        }
-
         const alert = {
             message: card.querySelector(".alert-message").textContent,
             description: card.querySelector(".alert-description").textContent,
-            date: date.toISOString(),
+            date: new Date(card.querySelector(".alert-date").textContent.replace('Date: ', '')).toISOString(),
             importance: card.classList.contains('high') ? 'high' :
                         card.classList.contains('medium') ? 'medium' :
                         'low',
@@ -198,7 +149,7 @@ document.getElementById("date-filter").addEventListener("change", updateAlerts);
 function updateAlerts() {
     const searchQuery = document.getElementById("search-input").value.toLowerCase();
     const selectedDate = document.getElementById("date-filter").value;
-    
+
     const alertCards = document.querySelectorAll(".alert-card");
 
     alertCards.forEach(card => {
