@@ -15,9 +15,9 @@ function loadAlerts(alerts) {
 
     alerts.forEach(alert => {
         const alertCard = document.createElement("div");
-        alertCard.className = `alert-card ${alert.status}`;
+        alertCard.className = `alert-card ${alert.status || ''}`;
 
-        const formattedDate = new Date(alert.date).toLocaleString(undefined, {
+        const formattedDate = new Date(formatDate(alert.date)).toLocaleString(undefined, {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
@@ -27,10 +27,10 @@ function loadAlerts(alerts) {
 
         alertCard.innerHTML = `
             <i class="fas ${getIcon(alert.importance)}"></i>
-            <div class="alert-message">${alert.message}</div>
-            <div class="alert-description">${alert.description}</div>
+            <div class="alert-message">${alert.message || ''}</div>
+            <div class="alert-description">${alert.description || ''}</div>
             <div class="alert-date">Date: ${formattedDate}</div>
-            <div class="alert-status">Status: ${capitalize(alert.status)}</div>
+            <div class="alert-status">Status: ${capitalize(alert.status || '')}</div>
         `;
 
         alertList.appendChild(alertCard);
@@ -41,7 +41,7 @@ function loadAlerts(alerts) {
 
 // Helper function to capitalize the first letter of a string
 function capitalize(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
+    return str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
 }
 
 // Get icon based on importance
@@ -98,18 +98,10 @@ function getAlertsFromDOM() {
     const alerts = [];
     document.querySelectorAll(".alert-card").forEach(card => {
         const dateText = card.querySelector(".alert-date").textContent.replace('Date: ', '');
-        let date;
-        try {
-            date = new Date(dateText).toISOString();
-        } catch (error) {
-            console.warn(`Invalid date: ${dateText}. Using current date instead.`);
-            date = new Date().toISOString();
-        }
-
         const alert = {
             message: card.querySelector(".alert-message").textContent,
             description: card.querySelector(".alert-description").textContent,
-            date: date,
+            date: formatDate(dateText),
             importance: card.classList.contains('high') ? 'high' :
                         card.classList.contains('medium') ? 'medium' :
                         'low',
@@ -209,14 +201,24 @@ document.getElementById("export-btn").addEventListener("click", () => {
 });
 
 // Helper function to format dates
-function formatDate(date) {
-    const dateObject = new Date(date);
-    const year = dateObject.getFullYear();
-    const month = String(dateObject.getMonth() + 1).padStart(2, '0');
-    const day = String(dateObject.getDate()).padStart(2, '0');
-    const hour = String(dateObject.getHours()).padStart(2, '0');
-    const minute = String(dateObject.getMinutes()).padStart(2, '0');
-    const second = String(dateObject.getSeconds()).padStart(2, '0');
-
-    return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+function formatDate(dateString) {
+    if (!dateString) return 'Invalid date';
+    
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+        // If the date is invalid, try parsing it manually
+        const parts = dateString.split(' at ');
+        if (parts.length === 2) {
+            const [datePart, timePart] = parts;
+            const [day, month, year] = datePart.split(' ');
+            const [hour, minute] = timePart.split(':');
+            const monthIndex = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'].indexOf(month.toLowerCase());
+            if (monthIndex !== -1) {
+                return new Date(year, monthIndex, day, hour, minute).toISOString();
+            }
+        }
+        console.warn(`Invalid date: ${dateString}. Using current date instead.`);
+        return new Date().toISOString();
+    }
+    return date.toISOString();
 }
