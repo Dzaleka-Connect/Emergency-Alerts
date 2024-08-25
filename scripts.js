@@ -17,11 +17,19 @@ function loadAlerts(alerts) {
         const alertCard = document.createElement("div");
         alertCard.className = `alert-card ${alert.status}`;
 
+        const formattedDate = new Date(alert.date).toLocaleString(undefined, {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
         alertCard.innerHTML = `
             <i class="fas ${getIcon(alert.importance)}"></i>
             <div class="alert-message">${alert.message}</div>
             <div class="alert-description">${alert.description}</div>
-            <div class="alert-date">Date: ${new Date(alert.date).toLocaleString()}</div>
+            <div class="alert-date">Date: ${formattedDate}</div>
             <div class="alert-status">Status: ${capitalize(alert.status)}</div>
         `;
 
@@ -89,10 +97,19 @@ document.getElementById("alert-form").addEventListener("submit", async function 
 function getAlertsFromDOM() {
     const alerts = [];
     document.querySelectorAll(".alert-card").forEach(card => {
+        const dateText = card.querySelector(".alert-date").textContent.replace('Date: ', '');
+        let date;
+        try {
+            date = new Date(dateText).toISOString();
+        } catch (error) {
+            console.warn(`Invalid date: ${dateText}. Using current date instead.`);
+            date = new Date().toISOString();
+        }
+
         const alert = {
             message: card.querySelector(".alert-message").textContent,
             description: card.querySelector(".alert-description").textContent,
-            date: new Date(card.querySelector(".alert-date").textContent.replace('Date: ', '')).toISOString(),
+            date: date,
             importance: card.classList.contains('high') ? 'high' :
                         card.classList.contains('medium') ? 'medium' :
                         'low',
@@ -190,3 +207,16 @@ document.getElementById("export-btn").addEventListener("click", () => {
     link.setAttribute('download', 'alerts.csv');
     link.click();
 });
+
+// Helper function to format dates
+function formatDate(date) {
+    const dateObject = new Date(date);
+    const year = dateObject.getFullYear();
+    const month = String(dateObject.getMonth() + 1).padStart(2, '0');
+    const day = String(dateObject.getDate()).padStart(2, '0');
+    const hour = String(dateObject.getHours()).padStart(2, '0');
+    const minute = String(dateObject.getMinutes()).padStart(2, '0');
+    const second = String(dateObject.getSeconds()).padStart(2, '0');
+
+    return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+}
